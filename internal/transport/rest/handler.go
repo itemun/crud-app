@@ -14,7 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Books interface {
+type Cars interface {
 	Create(ctx context.Context, car domain.Car) error
 	GetByID(ctx context.Context, id int64) (domain.Car, error)
 	GetAll(ctx context.Context) ([]domain.Car, error)
@@ -23,7 +23,7 @@ type Books interface {
 }
 
 type Handler struct {
-	booksService Cars
+	carsService Cars
 }
 
 func NewHandler(cars Cars) *Handler {
@@ -86,7 +86,7 @@ func (h *Handler) createCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var book domain.Car
+	var car domain.Car
 	if err = json.Unmarshal(reqBytes, &car); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
