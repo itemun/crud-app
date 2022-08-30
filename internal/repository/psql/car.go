@@ -18,7 +18,7 @@ func NewCars(db *sql.DB) *Cars {
 }
 
 func (c *Cars) Create(ctx context.Context, car domain.Car) error {
-	_, err := c.db.Exec("INSERT INTO cars (model, name, production_date, hp) values ($1, $2, $3, $4)",
+	_, err := c.db.ExecContext(ctx, "INSERT INTO cars (model, name, production_date, hp) values ($1, $2, $3, $4)",
 		car.Model, car.Name, car.ProductionDate, car.HP)
 
 	return err
@@ -26,7 +26,7 @@ func (c *Cars) Create(ctx context.Context, car domain.Car) error {
 
 func (c *Cars) GetByID(ctx context.Context, id int64) (domain.Car, error) {
 	var car domain.Car
-	err := c.db.QueryRow("SELECT id, model, name, production_date, hp FROM cars WHERE id=$1", id).
+	err := c.db.QueryRowContext(ctx, "SELECT id, model, name, production_date, hp FROM cars WHERE id=$1", id).
 		Scan(&car.ID, &car.Model, &car.Name, &car.ProductionDate, &car.HP)
 	if err == sql.ErrNoRows {
 		return car, domain.ErrCarNotFound
@@ -36,7 +36,7 @@ func (c *Cars) GetByID(ctx context.Context, id int64) (domain.Car, error) {
 }
 
 func (c *Cars) GetAll(ctx context.Context) ([]domain.Car, error) {
-	rows, err := c.db.Query("SELECT id, model, name, production_date, hp FROM cars")
+	rows, err := c.db.QueryContext(ctx, "SELECT id, model, name, production_date, hp FROM cars")
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *Cars) GetAll(ctx context.Context) ([]domain.Car, error) {
 }
 
 func (c *Cars) Delete(ctx context.Context, id int64) error {
-	_, err := c.db.Exec("DELETE FROM cars WHERE id=$1", id)
+	_, err := c.db.ExecContext(ctx, "DELETE FROM cars WHERE id=$1", id)
 
 	return err
 }
