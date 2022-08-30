@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/itemun/crud-app/internal/config"
 	"log"
 	"net/http"
 	"time"
@@ -14,14 +15,20 @@ import (
 )
 
 func main() {
+
+	cfg, err := config.New("configs", "example")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// init db
 	db, err := database.NewPostgresConnection(database.ConnectionInfo{
-		Host:     "localhost",
-		Port:     5433,
-		Username: "postgres",
-		DBName:   "postgres",
-		SSLMode:  "disable",
-		Password: "goLANGn1nja",
+		Host:     cfg.DBHost,
+		Port:     cfg.DBPort,
+		Username: cfg.DBUser,
+		DBName:   cfg.DBName,
+		SSLMode:  cfg.DBSSLMode,
+		Password: cfg.DBPassword,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +42,7 @@ func main() {
 
 	// init & run server
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + cfg.SrvPort,
 		Handler: handler.InitRouter(),
 	}
 
