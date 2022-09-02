@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/itemun/crud-app/internal/config"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 
@@ -15,10 +15,10 @@ import (
 )
 
 func main() {
-
+	logrus.SetFormatter(new(logrus.JSONFormatter))
 	cfg, err := config.New("configs", "example")
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 
 	// init db
@@ -31,7 +31,7 @@ func main() {
 		Password: cfg.DBPassword,
 	})
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	defer db.Close()
 
@@ -46,9 +46,9 @@ func main() {
 		Handler: handler.InitRouter(),
 	}
 
-	log.Println("SERVER STARTED AT", time.Now().Format(time.RFC3339))
+	logrus.Println("SERVER STARTED AT", time.Now().Format(time.RFC3339))
 
 	if err := srv.ListenAndServe(); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 }
