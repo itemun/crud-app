@@ -14,6 +14,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// @title Crud-App API
+// @version 1.0
+// @description API Server for CarsList Application
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 	cfg, err := config.New("configs", "example")
