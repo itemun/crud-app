@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"github.com/itemun/crud-app/internal/config"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 
@@ -13,18 +14,35 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// @title Crud-App API
+// @version 1.0
+// @description API Server for CarsList Application
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+	cfg, err := config.New("configs", "example")
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	// init db
 	db, err := database.NewPostgresConnection(database.ConnectionInfo{
-		Host:     "localhost",
-		Port:     5433,
-		Username: "postgres",
-		DBName:   "postgres",
-		SSLMode:  "disable",
-		Password: "goLANGn1nja",
+		Host:     cfg.DBHost,
+		Port:     cfg.DBPort,
+		Username: cfg.DBUser,
+		DBName:   cfg.DBName,
+		SSLMode:  cfg.DBSSLMode,
+		Password: cfg.DBPassword,
 	})
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	defer db.Close()
 
@@ -35,13 +53,13 @@ func main() {
 
 	// init & run server
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + cfg.SrvPort,
 		Handler: handler.InitRouter(),
 	}
 
-	log.Println("SERVER STARTED AT", time.Now().Format(time.RFC3339))
+	logrus.Println("SERVER STARTED AT", time.Now().Format(time.RFC3339))
 
 	if err := srv.ListenAndServe(); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 }
